@@ -1,13 +1,29 @@
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
+from chatterbot.comparisons import LevenshteinDistance
+from chatterbot.response_selection import get_most_frequent_response
 import pandas as pd
 
-Subset = pd.read_csv('/Users/davidtigau/Desktop/Interface/cleaned_anime_data.csv', # Change path file for csv in your system
-                     nrows=5, usecols=[4, 6, 7, 9, 15])  # Only first 5 rows are shown and the (1,4,6,7, 9,15) columns
+Subset = pd.read_csv(
+    '/Users/davidtigau/Documents/Courses/Software Engineering for CSAI/Group Project/Interface/cleaned_anime_data.csv',
+    nrows=5, usecols=[4, 6, 7, 9, 15])  # Only first 5 rows are shown and the (1,4,6,7, 9,15) columns
 
 Names = []
 for i in range(len(Subset["workName"])):
     Names.append(Subset["workName"][i])
+
+clean_names = []
+
+for item in Names:
+    cleaned_string = ""
+    for letter in item.lower():
+        if letter >= 'a' and letter <= 'z':
+            cleaned_string += letter
+        else:
+            cleaned_string += " "
+    clean_names.append(cleaned_string)
+
+Names = clean_names
 
 Reviews = []
 for i in range(len(Subset["Review"])):
@@ -29,26 +45,26 @@ Highest_Scored_Animes = []
 
 What_Q = []  # Question 1
 for item in Names:
-    What_Q.append("What is the anime {} about?".format(item))
+    What_Q.append("what is the anime {} about?".format(item))
 
 Review_A = []  # Answer 1
 for i in range(len(Names)):
-    Review_A.append("Here is a review written by a viwer about the anime {}: {}".format(Names[i], Reviews[i]))
+    Review_A.append("here is a review written by a viwer about the anime {}: {}".format(Names[i], Reviews[i]))
 
 Rating_Q = []  # Question 2
 for i in range(len(Names)):
-    Rating_Q.append("What rating does the anime {} have?".format(Names[i]))
+    Rating_Q.append("what rating does the anime {} have?".format(Names[i]))
 
 Score_A = []  # Answer 2
 for i in range(len(Names)):
-    Score_A.append("The anime {} recieved a score of {} out of 10".format(Names[i], Rating[i]))
+    Score_A.append("the anime {} recieved a score of {} out of 10".format(Names[i], Rating[i]))
     if Rating[i] > 8:
         Highest_Scored_Animes.append(
-            "A good anime recomendation would be {} which recived a score of {} out of 10".format(Names[i], Rating[i]))
+            "a good anime recomendation would be {} which recived a score of {} out of 10".format(Names[i], Rating[i]))
 
 Author_Q = []  # Question 3
 for item in Names:
-    Author_Q.append("Who is the author of {} ?".format(item))
+    Author_Q.append("who is the author of {} ?".format(item))
 
 Author_A = []  # Answer3
 for i in range(len(Names)):
@@ -56,20 +72,26 @@ for i in range(len(Names)):
 
 Episodes_Q = []  # Question 4
 for i in range(len(Names)):
-    Episodes_Q.append("How many episodes does {} have?".format(Names[i]))
+    Episodes_Q.append("how many episodes does {} have?".format(Names[i]))
 
 Episodes_A = []  # Answer 4
 for i in range(len(Names)):
     Episodes_A.append("{} has a total of {} episodes".format(Names[i], Episodes[i]))
 
-General_Q = []  # Question 5
+Specific_Q = []  # Question 5
 for i in range(len(Names)):
-    General_Q.append("What Animes do you recommend?")
-    General_Q.append("What are some good general animes?")
+    Specific_Q.append("What Animes do you recommend?")
+    Specific_Q.append("What are some good general animes?")
 
-General_A = []  # Answer 5
+Specific_A = []  # Answer 5
 for item in Highest_Scored_Animes:
-    General_A.append(item)
+    Specific_A.append(item)
+
+Favorite_Q = []  # Question 6
+Favorite_Q.append("What's your favorite anime?")
+
+Favorite_A = []  # Answer 6
+Favorite_A.append("My favorite anime is Cowboy Bepop")
 
 # print(What_Q)
 # print(Review_A)
@@ -88,7 +110,7 @@ def Question_Answer(Q, A):
         Anime_Chatbot_List.append(A[i])
 
 
-def General(Q, A):  # Actually acts more like a specific Q%A (Its size depends on the number of resposnes)
+def Specific(Q, A):  # Actually acts more like a specific Q%A (Its size depends on the number of resposnes)
     for i in range(len(A)):
         Anime_Chatbot_List.append(Q[i])
         Anime_Chatbot_List.append(A[i])
@@ -98,12 +120,31 @@ Question_Answer(What_Q, Review_A)
 Question_Answer(Rating_Q, Score_A)
 Question_Answer(Author_Q, Author_A)
 Question_Answer(Episodes_Q, Episodes_A)
-General(General_Q, General_A)
+Specific(Specific_Q, Specific_A)
+Specific(Favorite_Q, Favorite_A)
 
-Anime_Bot = ChatBot('Anime_Champ')
+Anime_Bot = ChatBot('Anime_Champ', read_only=True, logic_adapters=[{"import_path": "chatterbot.logic.BestMatch",
+                                                                    "statement_comparison_function": "chatterbot.comparisons.levenshtein_distance",
+                                                                    "threshold": 0.99}])
 
 new_trainer = ListTrainer(Anime_Bot)
-
 new_trainer.train(Anime_Chatbot_List)
 
-# CHATBOT PART END
+# for i in range(5):
+#     answer = Anime_Bot.get_response(Rating_Q[i])
+#     print(Rating_Q[i])
+#     print(answer)
+#
+# for i in range(5):
+#     answer = Anime_Bot.get_response(Author_Q[i])
+#     print(Author_Q[i])
+#     print(answer)
+#
+# for i in range(5):
+#     answer = Anime_Bot.get_response(Episodes_Q[i])
+#     print(Episodes_Q[i])
+#     print(answer)
+#
+# answer = Anime_Bot.get_response(Favorite_Q[0])
+# print(Favorite_Q[0])
+# print(answer)

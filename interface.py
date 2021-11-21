@@ -1,5 +1,7 @@
 from tkinter import *
 from anime_chatbot import *
+from softwareengineeringproject import *
+
 bot_name = "MyAnimeBot"
 bot_response = "Here should be the answer"
 
@@ -75,9 +77,14 @@ class ChatApplication:
         self.text_widget.insert(END, msg1)
         self.text_widget.configure(state = DISABLED)
 
+        lang = detect_language(msg)
+
+        msg_trans = translate_input(msg, lang)
 
         #displays the chatbot's response in the message box
-        msg2 = f"{bot_name}: {Anime_Bot.get_response(msg)}\n\n"  # get_response is the function that returns the chatbot's answer to msg input
+        output = Anime_Bot.get_response(msg_trans)
+        output_trans = translate_output(output, lang)
+        msg2 = f"{bot_name}: {output_trans}\n\n"  # get_response is the function that returns the chatbot's answer to msg input
         self.text_widget.configure(state = NORMAL)
         self.text_widget.insert(END, msg2)
         self.text_widget.configure(state = DISABLED)
