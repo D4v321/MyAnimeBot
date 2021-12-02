@@ -4,7 +4,7 @@ from chatterbot.comparisons import LevenshteinDistance
 from chatterbot.response_selection import get_most_frequent_response
 import pandas as pd
 
-Subset = pd.read_csv ('/content/gdrive/MyDrive/SoftwareEngineering/Data/cleaned_anime_data.csv', nrows = 5, usecols=[ 4, 6, 7, 9, 15]) #Only first 5 rows are shown and the (1,4,6,7, 9,15) columns
+Subset = pd.read_csv ('/content/gdrive/MyDrive/SoftwareEngineering/Data/cleaned_anime_data.csv', nrows = 1000, usecols=[ 4, 6, 7, 9, 15]) #Only first 1000 rows of data are used and the (1,4,6,7, 9,15) columns
 
 #Extracting Names variables from the dataset
 
@@ -58,10 +58,10 @@ def Question_Answer(Q,A):
   #This is repeated,until all items in both lists have been added to the Anime_Chatbot_List
     for i in range(len(Names)):
         Anime_Chatbot_List.append(Q[i])
-        print(Q[i])
         Anime_Chatbot_List.append(A[i])
-        print(A[i])
-        print()
+        #print(Q[i])
+        #print(A[i])
+        #print()
 
         
 def Specific(Q,A): 
@@ -71,10 +71,10 @@ def Specific(Q,A):
   #This Behaves like the Question_Answer function but it stops once all the items in the Answer list have beened appended to the Anime_Chatbot_List
     for i in range(len(A)):
         Anime_Chatbot_List.append(Q[i])
-        print(Q[i])
         Anime_Chatbot_List.append(A[i])
-        print(A[i])
-        print()
+        #print(Q[i])        
+        #print(A[i])
+        #print()
 
 
     
