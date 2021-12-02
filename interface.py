@@ -77,13 +77,13 @@ class ChatApplication:
         self.text_widget.insert(END, msg1)
         self.text_widget.configure(state = DISABLED)
 
+        # detects the language in which the message was sent
         lang = detect_language(msg)
-
         msg_trans = translate_input(msg, lang)
 
         #displays the chatbot's response in the message box
         output = Anime_Bot.get_response(msg_trans)
-        output_trans = translate_output(output, lang)
+        output_trans = translate_output(output, lang) # translate the message in the langauge that the initial message was sent
         msg2 = f"{bot_name}: {output_trans}\n\n"  # get_response is the function that returns the chatbot's answer to msg input
         self.text_widget.configure(state = NORMAL)
         self.text_widget.insert(END, msg2)
